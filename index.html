@@ -182,6 +182,26 @@ html{color-scheme:light}
 .steps3 li::before{content:counter(s);flex:none;width:30px;height:30px;border-radius:50%;background:#168a3a;color:#fff;display:grid;place-items:center;font-weight:700}
 footer.site .copy{margin-top:22px;padding-top:14px;border-top:1px solid rgba(255,255,255,.2);text-align:center;font-size:12px;color:#dfe9e0;letter-spacing:.03em}
 </style>
+<style>
+/* ---- order confirmation popup ---- */
+#done{padding:0}
+#done .ok{text-align:center;padding:30px 18px 6px;background:linear-gradient(#f0fbf2,#fff 70%);border-radius:12px}
+#done .ring{width:104px;height:104px;margin:0 auto 14px;border-radius:50%;background:#d8f5de;display:grid;place-items:center}
+#done .ring svg{width:56px;height:56px}
+#done h2{font-size:30px;line-height:1.2;color:#2f4f36;margin:0 0 12px}
+#done .nm{font-size:18px;font-weight:700;color:#1d1d1b;margin:0 0 6px}
+#done .sub{font-size:17px;color:#374151;margin:0 0 14px}
+#done .pk{display:inline-block;background:#eaf6ec;border:1px solid #bfe3c5;border-radius:12px;padding:10px 20px;font-size:19px;font-weight:700;color:#1d1d1b;margin:0 0 12px}
+#done .oid{font-size:14px;color:#5d5b52;margin:0 0 14px}
+#done .oid b{font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.04em;color:#1d1d1b}
+#done .call{background:#eaf2fd;border:1px solid #c5d9f5;border-radius:12px;padding:14px;text-align:left;color:#1e3a8a;font-size:16px;line-height:1.5;margin:0 0 12px}
+#done .pack{text-align:left;font-size:16px;color:#374151;margin:0 0 12px}
+#done .tr{font-weight:700;color:#2f4f36;font-size:15px;margin:0 0 4px}
+#done .tc{font-size:13px;color:#8a8a82;margin:0 0 14px}
+#done .okbtn{display:block;width:100%;border:0;border-radius:99px;padding:15px;font:inherit;font-weight:700;font-size:20px;color:#2f4f36;background:linear-gradient(#e9cf73,#c9a13a);cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+#done .miss{font-size:14px;color:#6b6b63;margin:14px 0 4px}
+#done .help{font-size:13px;color:#8a8a82;margin:0 0 6px}
+</style>
 </head>
 <body>
 <div class="ann">🌿 Free Shipping on All Orders &nbsp;|&nbsp; Cash on Delivery Available &nbsp;|&nbsp; आयुर्वेदिक फ़ॉर्मूलेशन</div>
@@ -247,8 +267,22 @@ footer.site .copy{margin-top:22px;padding-top:14px;border-top:1px solid rgba(255
       <div class="err" id="err" role="alert"></div>
       <button class="cta" type="submit" id="btn">🛒 ऑर्डर करें — COD</button>
     </form>
-    <div id="done" hidden style="text-align:center;padding:32px 12px">
-      <h2>धन्यवाद! आपका दिन शुभ हो।</h2>
+    <div id="done" hidden role="status" aria-live="polite">
+      <div class="ok">
+        <div class="ring"><svg viewBox="0 0 56 56" fill="none" stroke="#168a3a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="28" cy="28" r="23"/><path d="M18 29l7 7 14-15"/></svg></div>
+        <h2>ऑर्डर कन्फर्म! 🎉</h2>
+        <p class="nm">धन्यवाद <span id="doneName"></span> जी 🙏</p>
+        <p class="sub">आपका COD ऑर्डर सफलतापूर्वक प्राप्त हो गया है।</p>
+        <div class="pk" id="donePack"></div>
+        <p class="oid">ऑर्डर आईडी: <b id="doneId"></b></p>
+        <div class="call">📞 हमारी टीम आज या अगले कार्यदिवस में आपके दिए गए मोबाइल नंबर पर ऑर्डर की पुष्टि के लिए कॉल करेगी। कृपया अपना फ़ोन उपलब्ध रखें।</div>
+        <p class="pack">📦 ऑर्डर पुष्टि होने के बाद ही आपका ऑर्डर पैक करके भेजा जाएगा।</p>
+        <p class="tr">📦 100% गोपनीय पैकेजिंग &nbsp; 🛡️ 7 दिन मनी बैक गारंटी*</p>
+        <p class="tc">*शर्तें लागू।</p>
+        <button class="okbtn" type="button" id="doneOk">ठीक है ✓</button>
+        <p class="miss">यदि हमारी कॉल छूट जाए, तो इसी नंबर पर वापस कॉल कर सकते हैं।</p>
+        <p class="help">यदि आपको तुरंत सहायता चाहिए तो कॉल करें: <b id="doneHelp"></b></p>
+      </div>
     </div>
   </div>
 </dialog>
@@ -274,6 +308,8 @@ var CONFIG = {
   WHATSAPP_TEXT: "नमस्ते, मैंने आपका ऑफर देखा है।",
   PIXEL_ID: ""           // Meta Pixel ID (ज़रूरी नहीं)
 };
+
+var SUPPORT_PHONE = "7297066463"; // confirmation popup me dikhne wala help number
 
 var PRODUCT = {
   brand: "Prakriti Sutra",
@@ -361,6 +397,7 @@ var PRODUCT = {
   }
   Array.prototype.forEach.call(document.querySelectorAll("[data-order]"), function (b) { b.addEventListener("click", openForm); });
   $("close").addEventListener("click", function () { dlg.close(); });
+  $("doneOk").addEventListener("click", function () { dlg.close(); });
   dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
 
   form.addEventListener("submit", function (e) {
@@ -388,6 +425,14 @@ var PRODUCT = {
     } catch (e) {}
     fetch(CONFIG.SCRIPT_URL, { method: "POST", mode: "no-cors", body: body })
       .then(function () {
+        // order confirmation popup (customer name, pack, order id)
+        var oid = "ORD-" + Array.from({ length: 8 }, function () { return "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".charAt(Math.floor(Math.random() * 32)); }).join("");
+        $("doneName").textContent = name;
+        $("donePack").textContent = "1 Pack — " + rs(PRODUCT.price);
+        $("doneId").textContent = oid;
+        $("doneHelp").textContent = SUPPORT_PHONE;
+        // Meta Pixel: count this as a lead/registration (once per successful order)
+        try { if (window.fbq) fbq("track", "CompleteRegistration", { value: PRODUCT.price, currency: "INR" }); } catch (e) {}
         form.hidden = true; $("done").hidden = false;
         if (CONFIG.WHATSAPP_NUMBER) {
           var a = $("waBtn");
