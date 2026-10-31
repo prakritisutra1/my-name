@@ -209,7 +209,7 @@ footer.site .copy{margin-top:22px;padding-top:14px;border-top:1px solid rgba(255
 <div class="wrap">
   <a class="call-now" href="tel:+917297066463" aria-label="Call Now — dial support number"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.58 2.8.7A2 2 0 0 1 22 16.92z"/></svg>Call Now</a>
 
-  <div class="gal" id="gal"></div>
+  <div class="gal" id="gal" hidden></div>
   <div class="thumbs" id="thumbs"></div>
 
   <h1 id="pname"></h1>
@@ -225,6 +225,12 @@ footer.site .copy{margin-top:22px;padding-top:14px;border-top:1px solid rgba(255
   <section><h2>इसके फ़ायदे</h2><div class="box"><ul class="chk" id="benefits"></ul></div></section>
   <section><h2>प्रोडक्ट की जानकारी</h2><div class="box" id="about"></div></section>
   <section><h2>इस्तेमाल का तरीका</h2><div class="box"><ol class="steps" id="usage"></ol></div></section>
+  <section>
+    <h2 style="text-align:center;color:#168a3a">✅ Government Approved<br><small style="font-size:16px">सरकार द्वारा अनुमोदित</small></h2>
+    <div class="box" style="padding:8px">
+      <img src="form.jpeg" alt="Government approval" loading="lazy" style="display:block;width:100%;height:auto;border-radius:10px">
+    </div>
+  </section>
   <section class="revs"><h2>ग्राहकों के रिव्यू</h2><div class="rev" id="reviews"></div><button class="cta alt revbtn" type="button" id="revOpen">✍️ अपना रिव्यू लिखें</button></section>
   <section><button class="cta" type="button" data-order>अभी ऑर्डर करें</button></section>
   <section><div class="steps3"><h2>ऑर्डर कैसे करें</h2><ol>
@@ -317,7 +323,7 @@ var PRODUCT = {
   tagline: "Amrit Ayurveda का आयुर्वेदिक कॉम्बो पैक",
   price: 999,
   mrp: 1499,
-  photos: ["form.jpeg"],
+  photos: [],
   badges: ["कैश ऑन डिलीवरी", "पूरे भारत में डिलीवरी", "आयुर्वेदिक फ़ॉर्मूलेशन", "7 दिन में रिटर्न"],
   benefits: [
     "आयुर्वेद पर आधारित कैप्सूल और मसाज ऑयल एक ही कॉम्बो में।",
@@ -376,6 +382,7 @@ var PRODUCT = {
     Array.prototype.forEach.call(thumbs.children, function (b, j) { b.setAttribute("aria-current", j === i ? "true" : "false"); });
   }
   if (PRODUCT.photos && PRODUCT.photos.length) {
+    gal.hidden = false;
     if (PRODUCT.photos.length > 1) {
       PRODUCT.photos.forEach(function (src, i) {
         var b = el("button"); b.type = "button"; b.setAttribute("aria-label", "फ़ोटो " + (i + 1));
@@ -384,7 +391,7 @@ var PRODUCT = {
       });
     }
     show(0);
-  } else placeholder();
+  } else { thumbs.hidden = true; }
 
   // ---- order form: opens only after "Order now" ----
   var dlg = $("dlg"), form = $("leadForm"), err = $("err"), btn = $("btn");
