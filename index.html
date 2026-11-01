@@ -183,6 +183,26 @@ html{color-scheme:light}
 footer.site .copy{margin-top:22px;padding-top:14px;border-top:1px solid rgba(255,255,255,.2);text-align:center;font-size:12px;color:#dfe9e0;letter-spacing:.03em}
 </style>
 <style>
+/* ---- sale countdown (page) ---- */
+.salebar{text-align:center;margin:18px 0 14px}
+.salebar .st{font-size:19px;font-weight:700;color:var(--ink);margin:0 0 6px}
+.salebar .cd{display:flex;justify-content:center;align-items:flex-start;gap:10px}
+.salebar .cd div{min-width:56px}
+.salebar .cd b{display:block;font-size:44px;line-height:1.1;font-weight:800;color:#000;font-variant-numeric:tabular-nums}
+.salebar .cd span{display:block;font-size:13px;color:var(--muted);margin-top:-2px}
+.salebar .cd i{font-style:normal;font-size:40px;font-weight:800;line-height:1.2;color:#000}
+.salebar .sv{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:8px 22px;border:1.5px dashed var(--line);border-radius:12px;font-weight:700;font-size:16px;color:var(--ink)}
+.salebar .sv svg{width:20px;height:20px}
+/* ---- cart icon + pay online ---- */
+svg.cart{width:1.15em;height:1.15em;vertical-align:-.2em;margin-right:8px}
+.pill svg.cart{margin-right:5px}
+.payon{display:block;width:100%;margin-top:12px;padding:14px;border:0;border-radius:99px;cursor:pointer;font:inherit;font-weight:700;font-size:17px;color:#1d1d1b;background:linear-gradient(90deg,#e6cf7a,#d9b84f);text-align:center}
+.paynote{text-align:center;font-size:13px;color:var(--muted);margin:8px 0 0}
+/* ---- recent order toast ---- */
+#ordToast{position:fixed;left:12px;bottom:84px;z-index:3;max-width:calc(100% - 24px);display:flex;align-items:center;gap:10px;background:#fff;color:#1d1d1b;border:1px solid #e3e3e3;border-radius:12px;padding:10px 14px;box-shadow:0 6px 18px rgba(0,0,0,.18);font-size:14px;line-height:1.35;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .35s,transform .35s}
+#ordToast.on{opacity:1;transform:none}
+#ordToast .ic{font-size:22px}
+#ordToast b{display:block;font-size:15px}
 /* ---- order confirmation popup ---- */
 #done{padding:0}
 #done .ok{text-align:center;padding:30px 18px 6px;background:linear-gradient(#f0fbf2,#fff 70%);border-radius:12px}
@@ -205,7 +225,7 @@ footer.site .copy{margin-top:22px;padding-top:14px;border-top:1px solid rgba(255
 </head>
 <body>
 <div class="ann">🌿 Free Shipping on All Orders &nbsp;|&nbsp; Cash on Delivery Available &nbsp;|&nbsp; आयुर्वेदिक फ़ॉर्मूलेशन</div>
-<div class="topbar"><div class="in"><div class="bn"><svg viewBox="0 0 64 64" fill="none" stroke="#2f4f36" stroke-width="3" stroke-linecap="round" aria-hidden="true"><circle cx="32" cy="32" r="28"/><path d="M32 50V30M32 38c-6-2-10-6-10-12M32 34c6-2 10-6 10-12M32 28c-3-5-2-10 0-14 2 4 3 9 0 14zM20 52c8 4 16 4 24 0"/></svg><span id="brand"></span></div><button class="pill" type="button" data-order>अभी ऑर्डर करें</button></div></div>
+<div class="topbar"><div class="in"><div class="bn"><svg viewBox="0 0 64 64" fill="none" stroke="#2f4f36" stroke-width="3" stroke-linecap="round" aria-hidden="true"><circle cx="32" cy="32" r="28"/><path d="M32 50V30M32 38c-6-2-10-6-10-12M32 34c6-2 10-6 10-12M32 28c-3-5-2-10 0-14 2 4 3 9 0 14zM20 52c8 4 16 4 24 0"/></svg><span id="brand"></span></div><button class="pill" type="button" data-order><svg class="cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>अभी ऑर्डर करें</button></div></div>
 <div class="wrap">
   <a class="call-now" href="tel:+917297066463" aria-label="Call Now — dial support number"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.58 2.8.7A2 2 0 0 1 22 16.92z"/></svg>Call Now</a>
 
@@ -215,7 +235,10 @@ footer.site .copy{margin-top:22px;padding-top:14px;border-top:1px solid rgba(255
   <h1 id="pname">Prakriti Sutra कॉम्बो</h1>
   <p class="tag" id="ptag">आयुर्वेदिक कॉम्बो पैक</p>
   <div class="price" id="price"></div>
-  <button class="cta" type="button" data-order>अभी ऑर्डर करें</button>
+  <div class="salebar" id="saleBar"><p class="st">Hurry up! Sale Ends in</p><div class="cd"><div><b id="sH">00</b><span>hours</span></div><i>:</i><div><b id="sM">00</b><span>mins</span></div><i>:</i><div><b id="sS">00</b><span>secs</span></div></div><div class="sv"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#000"/><path d="M8 16l8-8" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="8.5" cy="8.5" r="1.6" fill="#fff"/><circle cx="15.5" cy="15.5" r="1.6" fill="#fff"/></svg>Save 35%</div></div>
+  <button class="cta" type="button" data-order><svg class="cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>अभी ऑर्डर करें</button>
+  <button class="payon" type="button" id="payOnline">💳 Pay Online &amp; Get 10% Extra Discount</button>
+  <p class="paynote">UPI / Debit Card / Credit Card / Net Banking</p>
 
   <section><div class="box couple">
     <img src="couple.jpg" width="130" height="130" alt="आपके और आपके साथी के लिए आयुर्वेदिक कॉम्बो" loading="lazy">
@@ -231,7 +254,7 @@ footer.site .copy{margin-top:22px;padding-top:14px;border-top:1px solid rgba(255
       <img src="form.jpeg" alt="कंपनी का दस्तावेज़" loading="lazy" style="display:block;width:100%;height:auto;border-radius:10px">
     </div>
   </section>
-  <section><button class="cta" type="button" data-order>अभी ऑर्डर करें</button></section>
+  <section><button class="cta" type="button" data-order><svg class="cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>अभी ऑर्डर करें</button></section>
   <section><div class="steps3"><h2>ऑर्डर कैसे करें</h2><ol>
     <li>ऑर्डर करने के लिए अपना नाम और मोबाइल नंबर भरें।</li>
     <li>हमारी टीम जल्द ही आपको कॉल करके ऑर्डर कन्फर्म करेगी।</li>
@@ -253,8 +276,9 @@ footer.site .copy{margin-top:22px;padding-top:14px;border-top:1px solid rgba(255
   <div class="copy">© 2026 PRAKRITI SUTRA · CIN: U46497RJ2025PTC109202</div>
 </div></footer>
 
-<button class="bar" type="button" data-order>अभी ऑर्डर करें <span id="barPrice"></span> COD</button>
+<button class="bar" type="button" data-order><svg class="cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>अभी ऑर्डर करें <span id="barPrice"></span> COD</button>
 
+<div id="ordToast" role="status" aria-live="polite"><span class="ic">🛒</span><div><b id="otName"></b><span id="otText"></span></div></div>
 <dialog id="dlg">
   <div class="dlg">
     <button class="x" type="button" id="close" aria-label="बंद करें">&times;</button>
@@ -300,7 +324,7 @@ footer.site .copy{margin-top:22px;padding-top:14px;border-top:1px solid rgba(255
     <h2 id="exT">रुकिए! जाने से पहले<br>यह ऑफर देख लीजिए</h2>
     <p class="pr">Prakriti Sutra कॉम्बो अभी सिर्फ़ <b>₹999</b> में</p>
     <p class="cod">✅ Cash on Delivery उपलब्ध</p>
-    <button class="cta" type="button" id="exGo" data-order>अभी ऑर्डर करें ₹999 COD</button>
+    <button class="cta" type="button" id="exGo" data-order><svg class="cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>अभी ऑर्डर करें ₹999 COD</button>
     <p class="fn">🔒 सीक्रेट पैकिंग · फ्री डिलीवरी</p>
   </div>
 </dialog>
@@ -444,30 +468,109 @@ var PRODUCT = {
 </script>
 
 <script>
-/* "एक मिनट रुकिए" पॉपअप: डेस्कटॉप पर माउस ऊपर जाने पर, मोबाइल पर पहली बार Back दबाने पर। हर विज़िट में एक बार। */
+/* "एक मिनट रुकिए" पॉपअप: साइट खुलने के 30 सेकंड बाद एक बार, उसके बाद सिर्फ़ exit के समय
+   (डेस्कटॉप पर माउस ऊपर जाने पर, मोबाइल पर Back दबाने पर)। */
 (function () {
-  var d = document.getElementById("exitDlg"), shown = false;
+  var FIRST_SEC = 30; // ← साइट खुलने के कितने सेकंड बाद पहली बार आए
+  var d = document.getElementById("exitDlg");
   function ok() {
     var od = document.getElementById("dlg"), rd = document.getElementById("rdlg"), done = document.getElementById("done");
-    return !shown && !(od && od.open) && !(rd && rd.open) && !(done && !done.hidden);
+    return !d.open && !(od && od.open) && !(rd && rd.open) && !(done && !done.hidden);
   }
   function show() {
-    try { if (sessionStorage.getItem("ps_exit")) return; } catch (e) {}
     if (!ok()) return;
-    shown = true;
-    try { sessionStorage.setItem("ps_exit", "1"); } catch (e) {}
     if (d.showModal) d.showModal(); else d.setAttribute("open", "");
   }
-  document.getElementById("exX").addEventListener("click", function () { d.close(); });
-  document.getElementById("exGo").addEventListener("click", function () { d.close(); });
-  d.addEventListener("click", function (e) { if (e.target === d) d.close(); });
+  function closeIt() { d.close(); }
+  document.getElementById("exX").addEventListener("click", closeIt);
+  document.getElementById("exGo").addEventListener("click", closeIt);
+  d.addEventListener("click", function (e) { if (e.target === d) closeIt(); });
+
+  // साइट खुलने के 30 सेकंड बाद एक बार
+  setTimeout(show, FIRST_SEC * 1000);
+
   // डेस्कटॉप: माउस पेज के ऊपर से बाहर जाए
   document.addEventListener("mouseout", function (e) { if (!e.relatedTarget && e.clientY <= 0) show(); });
-  // मोबाइल: पहली बार Back पर पॉपअप; दूसरी बार Back से पेज सामान्य तरीके से छूटेगा
+  // मोबाइल: Back दबाने पर पॉपअप
   try {
     history.pushState({ ps: 1 }, "", location.href);
     window.addEventListener("popstate", function () { show(); });
   } catch (e) {}
+})();
+</script>
+<script>
+/* सेल काउंटडाउन (hours : mins : secs) */
+(function () {
+  var SALE_HOURS = 48; // ← सेल कितने घंटे की है (यहाँ बदलें)
+  var DUR = SALE_HOURS * 3600 * 1000, endAt = 0;
+  try { endAt = parseInt(localStorage.getItem("ps_sale_end3") || "0", 10) || 0; } catch (e) {}
+  function newEnd() {
+    endAt = Date.now() + DUR;
+    try { localStorage.setItem("ps_sale_end3", String(endAt)); } catch (e) {}
+  }
+  if (endAt <= Date.now()) newEnd();
+  function p(n) { return (n < 10 ? "0" : "") + n; }
+  function tick() {
+    var left = Math.floor((endAt - Date.now()) / 1000);
+    if (left <= 0) { newEnd(); left = Math.floor(DUR / 1000); }
+    document.getElementById("sH").textContent = p(Math.floor(left / 3600));
+    document.getElementById("sM").textContent = p(Math.floor(left % 3600 / 60));
+    document.getElementById("sS").textContent = p(left % 60);
+  }
+  tick(); setInterval(tick, 1000);
+})();
+</script>
+<script>
+/* Pay Online बटन: PAY_URL में अपना पेमेंट लिंक डालें (Razorpay/PhonePe/UPI लिंक आदि).
+   खाली रहने पर यह बटन सामान्य ऑर्डर फ़ॉर्म खोलेगा। */
+(function () {
+  var PAY_URL = ""; // ← यहाँ पेमेंट लिंक डालें, जैसे "https://rzp.io/l/xxxx"
+  document.getElementById("payOnline").addEventListener("click", function () {
+    if (PAY_URL) { window.location.href = PAY_URL; return; }
+    var b = document.querySelector(".cta[data-order]"); if (b) b.click();
+  });
+})();
+</script>
+<script>
+/* "ऑर्डर बुक हुआ" छोटा पॉपअप — नाम और जगह के साथ।
+   RECENT_ORDERS में अपने असली हाल के ऑर्डर डालें (Google Sheet से: सिर्फ़ पहला नाम + शहर).
+   सूची खाली है तो पॉपअप नहीं दिखेगा। */
+(function () {
+  var RECENT_ORDERS = [
+    // { name: "नाम", place: "शहर" },            ← एक ऑर्डर
+    // { name: "नाम", place: "शहर", count: 2 },  ← एक से ज़्यादा ऑर्डर
+    { name: "Rajesh", place: "Jaipur" },
+    { name: "Sumit", place: "Bhopal", count: 2 },
+    { name: "Sachin", place: "Hyderabad" },
+    { name: "Patel", place: "Ahmedabad", count: 3 },
+    { name: "Kewal", place: "Sanchore" }
+  ];
+  var EVERY_SEC = 20, SHOW_SEC = 5; // हर 20 सेकंड में, 5 सेकंड के लिए
+  // सिर्फ़ डिज़ाइन देखने के लिए: पेज के लिंक के अंत में #demo लगाएँ (जैसे file.html#demo)।
+  // ये नमूना नाम सिर्फ़ #demo वाले लिंक पर दिखते हैं, असली विज़िटर को कभी नहीं।
+  if (!RECENT_ORDERS.length && location.hash === "#demo") {
+    RECENT_ORDERS = [
+      { name: "नमूना-1", place: "शहर" },
+      { name: "नमूना-2", place: "शहर" },
+      { name: "नमूना-3", place: "शहर" }
+    ];
+  }
+  if (!RECENT_ORDERS.length) return;
+  var t = document.getElementById("ordToast"), n = document.getElementById("otName"), x = document.getElementById("otText"), i = 0;
+  function busy() {
+    var ids = ["dlg", "rdlg", "exitDlg"];
+    for (var k = 0; k < ids.length; k++) { var e = document.getElementById(ids[k]); if (e && e.open) return true; }
+    return false;
+  }
+  function show() {
+    if (document.hidden || busy()) return;
+    var o = RECENT_ORDERS[i++ % RECENT_ORDERS.length];
+    n.textContent = o.name + " (" + o.place + ")";
+    x.textContent = o.count > 1 ? "ने " + o.count + " ऑर्डर बुक किए" : "ने अभी ऑर्डर बुक किया";
+    t.classList.add("on");
+    setTimeout(function () { t.classList.remove("on"); }, SHOW_SEC * 1000);
+  }
+  setTimeout(function () { show(); setInterval(show, EVERY_SEC * 1000); }, 6000);
 })();
 </script>
 </body>
