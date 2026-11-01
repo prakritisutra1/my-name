@@ -284,8 +284,8 @@ svg.cart{width:1.15em;height:1.15em;vertical-align:-.2em;margin-right:8px}
     <button class="x" type="button" id="close" aria-label="बंद करें">&times;</button>
     <form id="leadForm" novalidate>
       <h2 style="color:#36563d;text-align:center;margin:8px 0 10px">Try Prakriti Sutra</h2>
-      <h3 style="text-align:center;margin:0 0 8px">अपना पैक चुनें — COD उपलब्ध</h3>
-      <p style="text-align:center">कोई अग्रिम भुगतान नहीं — डिलीवरी पर भुगतान करें</p>
+      <h3 id="fH3" style="text-align:center;margin:0 0 8px">अपना पैक चुनें — COD उपलब्ध</h3>
+      <p id="fP" style="text-align:center">कोई अग्रिम भुगतान नहीं — डिलीवरी पर भुगतान करें</p>
       <div style="background:#eef7f0;border:1px solid #c8d9cc;border-radius:12px;padding:12px;margin:12px 0 18px"><b>🛡️ 7 दिन की मनी बैक गारंटी</b><br><span style="color:#68736a">शर्तों के अनुसार 7 दिनों के भीतर सहायता उपलब्ध है।</span></div>
       <label for="name">आपका नाम<input id="name" name="name" type="text" autocomplete="name" maxlength="80" required></label>
       <label for="phone">मोबाइल नंबर<input id="phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="14" placeholder="10 अंकों का नंबर" required></label>
@@ -299,9 +299,9 @@ svg.cart{width:1.15em;height:1.15em;vertical-align:-.2em;margin-right:8px}
     <div id="done" hidden role="status" aria-live="polite">
       <div class="ok">
         <div class="ring"><svg viewBox="0 0 56 56" fill="none" stroke="#168a3a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="28" cy="28" r="23"/><path d="M18 29l7 7 14-15"/></svg></div>
-        <h2>ऑर्डर बुक हो गया! 🎉</h2>
+        <h2 id="doneH">ऑर्डर बुक हो गया! 🎉</h2>
         <p class="nm">धन्यवाद <span id="doneName"></span> जी 🙏</p>
-        <p class="sub">आपका COD ऑर्डर सफलतापूर्वक प्राप्त हो गया है।</p>
+        <p class="sub" id="doneSub">आपका COD ऑर्डर सफलतापूर्वक प्राप्त हो गया है।</p>
         <div class="pk" id="donePack"></div>
         <p class="oid">ऑर्डर आईडी: <b id="doneId"></b></p>
         <div class="call">📞 हमारी टीम आज या अगले कार्यदिवस में आपके दिए गए मोबाइल नंबर पर ऑर्डर की पुष्टि के लिए कॉल करेगी। कृपया अपना फ़ोन उपलब्ध रखें।</div>
@@ -335,6 +335,8 @@ var CONFIG = {
   CRM_URL: "https://crm.prakritisutra.org/api/public/lead",
   WHATSAPP_NUMBER: "",   // "919876543210" (देश कोड + नंबर, बिना + और space). खाली = बटन नहीं दिखेगा
   WHATSAPP_TEXT: "नमस्ते, मैंने आपका ऑफर देखा है।",
+  PAY_URL: "",           // Cashfree/Razorpay पेमेंट लिंक यहाँ डालें, जैसे "https://payments.cashfree.com/forms/kama". खाली = पेमेंट पेज नहीं खुलेगा
+  PAY_PRICE: 899,        // Pay Online की कीमत
   PIXEL_ID: ""           // Meta Pixel ID (ज़रूरी नहीं)
 };
 
@@ -409,11 +411,20 @@ var PRODUCT = {
   var params = new URLSearchParams(location.search);
   var source = params.get("utm_source") ? ("Meta ad - " + params.get("utm_source")).slice(0, 60) : "Meta ad";
 
+  var mode = "cod"; // "cod" या "online" (Pay Online बटन से)
+  function setMode(m) {
+    mode = m;
+    var on = m === "online";
+    $("fH3").textContent = on ? "Pay Online — " + rs(CONFIG.PAY_PRICE) + " (10% एक्स्ट्रा डिस्काउंट)" : "अपना पैक चुनें — COD उपलब्ध";
+    $("fP").textContent = on ? (CONFIG.PAY_URL ? "नाम और नंबर भरें, इसके बाद पेमेंट पेज खुलेगा" : "नाम और नंबर भरें, हमारी टीम आपसे पेमेंट के लिए संपर्क करेगी") : "कोई अग्रिम भुगतान नहीं — डिलीवरी पर भुगतान करें";
+    btn.textContent = on ? "💳 Pay Online " + rs(CONFIG.PAY_PRICE) + " — आगे बढ़ें" : "🛒 ऑर्डर करें — COD";
+  }
   function openForm() {
     if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
     setTimeout(function () { if (!form.hidden) form.name.focus(); }, 50);
   }
-  Array.prototype.forEach.call(document.querySelectorAll("[data-order]"), function (b) { b.addEventListener("click", openForm); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-order]"), function (b) { b.addEventListener("click", function () { setMode("cod"); openForm(); }); });
+  $("payOnline").addEventListener("click", function () { setMode("online"); openForm(); });
   $("close").addEventListener("click", function () { dlg.close(); });
   $("doneOk").addEventListener("click", function () { dlg.close(); });
   dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
@@ -433,12 +444,16 @@ var PRODUCT = {
 
     btn.disabled = true; btn.textContent = "भेज रहे हैं...";
     function ck(n){var m=document.cookie.match(new RegExp('(?:^|; )'+n+'=([^;]*)'));return m?m[1]:'';}
-    var body = new URLSearchParams({ name: name, phone: phone, address: address, pincode: pin, source: source, website: form.website.value, fbc: ck('_fbc'), fbp: ck('_fbp'), page: location.href.slice(0,200) });
+    var online = mode === "online";
+    var src = online ? (source + " - PAY ONLINE").slice(0, 60) : source;
+    var amt = online ? CONFIG.PAY_PRICE : PRODUCT.price;
+    var pm = online ? "ONLINE (payment pending)" : "COD";
+    var body = new URLSearchParams({ name: name, phone: phone, address: address, pincode: pin, source: src, payment_mode: pm, amount: amt, website: form.website.value, fbc: ck('_fbc'), fbp: ck('_fbp'), page: location.href.slice(0,200) });
     // no-cors: Google's script accepts the data; the reply is not readable, which is fine.
     // Also send the lead to the new CRM (failure here never blocks the order)
     try {
       fetch(CONFIG.CRM_URL, { method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true,
-        body: JSON.stringify({ name: name, phone: phone, address: address, pincode: pin, source: source, website: form.website.value, page: location.href.slice(0,200) }) })
+        body: JSON.stringify({ name: name, phone: phone, address: address, pincode: pin, source: src, payment_mode: pm, amount: amt, website: form.website.value, page: location.href.slice(0,200) }) })
         .catch(function () {});
     } catch (e) {}
     fetch(CONFIG.SCRIPT_URL, { method: "POST", mode: "no-cors", body: body })
@@ -446,11 +461,14 @@ var PRODUCT = {
         // order confirmation popup (customer name, pack, order id)
         var oid = "ORD-" + Array.from({ length: 8 }, function () { return "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".charAt(Math.floor(Math.random() * 32)); }).join("");
         $("doneName").textContent = name;
-        $("donePack").textContent = "1 Pack — " + rs(PRODUCT.price);
+        $("donePack").textContent = "1 Pack — " + rs(amt);
+        $("doneH").textContent = online ? "Pay Online रिक्वेस्ट मिल गई! 🎉" : "ऑर्डर बुक हो गया! 🎉";
+        $("doneSub").textContent = online ? "आपकी Pay Online रिक्वेस्ट प्राप्त हो गई है। पेमेंट पूरा होने के बाद ऑर्डर कन्फ़र्म होगा।" : "आपका COD ऑर्डर सफलतापूर्वक प्राप्त हो गया है।";
         $("doneId").textContent = oid;
         $("doneHelp").textContent = SUPPORT_PHONE;
         // Meta Pixel: count this as a lead/registration (once per successful order)
         try { if (window.fbq) fbq("track", "CompleteRegistration", { value: PRODUCT.price, currency: "INR" }); } catch (e) {}
+        if (online && CONFIG.PAY_URL) { window.location.href = CONFIG.PAY_URL; return; } // पेमेंट पेज पर भेजें
         form.hidden = true; $("done").hidden = false;
         if (CONFIG.WHATSAPP_NUMBER) {
           var a = $("waBtn");
@@ -518,17 +536,6 @@ var PRODUCT = {
     document.getElementById("sS").textContent = p(left % 60);
   }
   tick(); setInterval(tick, 1000);
-})();
-</script>
-<script>
-/* Pay Online बटन: PAY_URL में अपना पेमेंट लिंक डालें (Razorpay/PhonePe/UPI लिंक आदि).
-   खाली रहने पर यह बटन सामान्य ऑर्डर फ़ॉर्म खोलेगा। */
-(function () {
-  var PAY_URL = ""; // ← यहाँ पेमेंट लिंक डालें, जैसे "https://rzp.io/l/xxxx"
-  document.getElementById("payOnline").addEventListener("click", function () {
-    if (PAY_URL) { window.location.href = PAY_URL; return; }
-    var b = document.querySelector(".cta[data-order]"); if (b) b.click();
-  });
 })();
 </script>
 <script>
