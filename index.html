@@ -444,7 +444,7 @@ var PRODUCT = {
 </script>
 
 <script>
-/* Exit popup: shows once per visit on desktop when the mouse leaves the top of the page. */
+/* "एक मिनट रुकिए" पॉपअप: डेस्कटॉप पर माउस ऊपर जाने पर, मोबाइल पर पहली बार Back दबाने पर। हर विज़िट में एक बार। */
 (function () {
   var d = document.getElementById("exitDlg"), shown = false;
   function ok() {
@@ -461,8 +461,13 @@ var PRODUCT = {
   document.getElementById("exX").addEventListener("click", function () { d.close(); });
   document.getElementById("exGo").addEventListener("click", function () { d.close(); });
   d.addEventListener("click", function (e) { if (e.target === d) d.close(); });
-  // desktop
+  // डेस्कटॉप: माउस पेज के ऊपर से बाहर जाए
   document.addEventListener("mouseout", function (e) { if (!e.relatedTarget && e.clientY <= 0) show(); });
+  // मोबाइल: पहली बार Back पर पॉपअप; दूसरी बार Back से पेज सामान्य तरीके से छूटेगा
+  try {
+    history.pushState({ ps: 1 }, "", location.href);
+    window.addEventListener("popstate", function () { show(); });
+  } catch (e) {}
 })();
 </script>
 </body>
