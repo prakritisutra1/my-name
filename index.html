@@ -222,6 +222,58 @@ svg.cart{width:1.15em;height:1.15em;vertical-align:-.2em;margin-right:8px}
 #done .miss{font-size:14px;color:#6b6b63;margin:14px 0 4px}
 #done .help{font-size:13px;color:#8a8a82;margin:0 0 6px}
 </style>
+<style>
+/* ---- ORDER बटन special effects: glow pulse + shine sweep + click ripple ---- */
+[data-order]{position:relative;overflow:hidden;isolation:isolate;transition:transform .15s ease,filter .2s ease;-webkit-tap-highlight-color:transparent}
+.cta[data-order]{--bs:0 6px 16px rgba(0,0,0,.22);--ring:217,168,47}
+.pill[data-order]{--bs:0 0 0 rgba(0,0,0,0);--ring:47,79,54}
+.co[data-order]{--bs:0 8px 20px rgba(0,0,0,.25);--ring:217,168,47}
+.disc[data-order]{--bs:0 8px 22px rgba(160,127,44,.35);--ring:201,162,74}
+.bar[data-order]{--bs:0 8px 24px rgba(0,0,0,.4);--ring:217,168,47}
+[data-order]{animation:psPulse 2s ease-out infinite}
+@keyframes psPulse{
+  0%{transform:scale(1);box-shadow:var(--bs),0 0 0 0 rgba(var(--ring),.6)}
+  50%{transform:scale(1.035)}
+  70%{box-shadow:var(--bs),0 0 0 14px rgba(var(--ring),0)}
+  100%{transform:scale(1);box-shadow:var(--bs),0 0 0 0 rgba(var(--ring),0)}
+}
+/* चमकती हुई शाइन पट्टी */
+[data-order]::after{content:"";position:absolute;top:0;bottom:0;left:-70%;right:auto;width:45%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:psShine 3s ease-in-out infinite;pointer-events:none;z-index:1}
+@keyframes psShine{0%{left:-70%}55%,100%{left:130%}}
+/* आइकन हल्का हिलता है */
+[data-order] svg{animation:psWig 2.4s ease-in-out infinite;transform-origin:50% 60%}
+@keyframes psWig{0%,70%,100%{transform:rotate(0)}76%{transform:rotate(-14deg)}84%{transform:rotate(12deg)}92%{transform:rotate(-8deg)}}
+[data-order]:hover{filter:brightness(1.12)}
+[data-order]:active{transform:scale(.96);animation-play-state:paused}
+/* क्लिक पर रिपल */
+.ps-rip{position:absolute;border-radius:50%;background:rgba(255,255,255,.55);transform:scale(0);animation:psRip .6s ease-out forwards;pointer-events:none;z-index:2}
+@keyframes psRip{to{transform:scale(1);opacity:0}}
+
+/* ---- Welcome popup ---- */
+#welcomeDlg{max-width:380px}
+#welcomeDlg[open]{animation:psPop .5s cubic-bezier(.2,1.3,.4,1)}
+#welcomeDlg[open]::backdrop{animation:psFade .4s ease}
+@keyframes psPop{from{opacity:0;transform:translateY(24px) scale(.85)}to{opacity:1;transform:none}}
+@keyframes psFade{from{opacity:0}to{opacity:1}}
+#welcomeDlg .dlg{text-align:center;padding:30px 20px 20px;background:linear-gradient(#fff7de,#fff 55%);border-radius:12px;overflow:hidden}
+#welcomeDlg .hand{font-size:54px;line-height:1;display:inline-block;transform-origin:70% 70%;animation:psWave 1.6s ease-in-out .4s 2}
+@keyframes psWave{0%,100%{transform:rotate(0)}15%{transform:rotate(16deg)}30%{transform:rotate(-10deg)}45%{transform:rotate(14deg)}60%{transform:rotate(-6deg)}75%{transform:rotate(8deg)}}
+#welcomeDlg .tg{display:block;width:fit-content;margin:8px auto 10px;background:#e8f3ea;color:#2f4f36;font-weight:700;font-size:13px;padding:4px 12px;border-radius:99px}
+#welcomeDlg h2{font-size:25px;line-height:1.25;color:#2f4f36;margin:0 0 8px}
+#welcomeDlg .ws{font-size:16px;color:#374151;margin:0 0 10px}
+#welcomeDlg .pr{font-size:17px;color:#222;margin:0 0 4px}
+#welcomeDlg .pr b{font-size:26px;color:#111}
+#welcomeDlg .pr s{color:#8a8a82;font-size:16px;margin-left:6px}
+#welcomeDlg .cod{color:#168a3a;font-weight:700;margin:0 0 14px;font-size:15px}
+#welcomeDlg .later{display:block;width:100%;margin-top:10px;background:none;border:0;font:inherit;font-size:15px;color:#5d5b52;text-decoration:underline;cursor:pointer;padding:6px}
+#welcomeDlg .fn{font-size:13px;color:#666;margin:8px 0 0}
+#welcomeDlg .sp{position:absolute;pointer-events:none;font-size:18px;opacity:0;animation:psFloat 3.2s ease-in infinite}
+@keyframes psFloat{0%{transform:translateY(0) rotate(0);opacity:0}15%{opacity:.9}100%{transform:translateY(190px) rotate(160deg);opacity:0}}
+
+@media (prefers-reduced-motion:reduce){
+  [data-order],[data-order]::after,[data-order] svg,#welcomeDlg[open],#welcomeDlg .hand,#welcomeDlg .sp{animation:none!important}
+}
+</style>
 </head>
 <body>
 <div class="ann">🌿 Free Shipping on All Orders &nbsp;|&nbsp; Cash on Delivery Available &nbsp;|&nbsp; आयुर्वेदिक फ़ॉर्मूलेशन</div>
@@ -328,6 +380,25 @@ svg.cart{width:1.15em;height:1.15em;vertical-align:-.2em;margin-right:8px}
     <p class="fn">🔒 सीक्रेट पैकिंग · फ्री डिलीवरी</p>
   </div>
 </dialog>
+<dialog id="welcomeDlg" aria-labelledby="wlT">
+  <div class="dlg">
+    <button class="x" type="button" id="wlX" aria-label="बंद करें">&times;</button>
+    <span class="sp" style="left:12%;top:-10px;animation-delay:0s">🌿</span>
+    <span class="sp" style="left:34%;top:-10px;animation-delay:.9s">✨</span>
+    <span class="sp" style="left:58%;top:-10px;animation-delay:.4s">🍃</span>
+    <span class="sp" style="left:80%;top:-10px;animation-delay:1.4s">✨</span>
+    <div class="hand" aria-hidden="true">🙏</div>
+    <span class="tg">🌿 स्वागत है</span>
+    <h2 id="wlT">नमस्ते! Prakriti Sutra में आपका स्वागत है</h2>
+    <p class="ws">आयुर्वेदिक कॉम्बो पैक — कैप्सूल + मसाज ऑयल</p>
+    <p class="pr">आज का ऑफर: <b>₹999</b><s>₹1,499</s></p>
+    <p class="cod">✅ Cash on Delivery · 🚚 फ्री डिलीवरी</p>
+    <button class="cta" type="button" id="wlGo" data-order><svg class="cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>अभी ऑर्डर करें ₹999 COD</button>
+    <button class="later" type="button" id="wlLater">पहले प्रोडक्ट देखना चाहता/चाहती हूँ</button>
+    <p class="fn">🔒 सीक्रेट पैकिंग · 7 दिन मनी बैक गारंटी*</p>
+  </div>
+</dialog>
+
 <script>
 /* ============ यहाँ अपनी जानकारी बदलें / EDIT THIS PART ============ */
 var CONFIG = {
@@ -492,8 +563,8 @@ var PRODUCT = {
   var FIRST_SEC = 30; // ← साइट खुलने के कितने सेकंड बाद पहली बार आए
   var d = document.getElementById("exitDlg");
   function ok() {
-    var od = document.getElementById("dlg"), rd = document.getElementById("rdlg"), done = document.getElementById("done");
-    return !d.open && !(od && od.open) && !(rd && rd.open) && !(done && !done.hidden);
+    var od = document.getElementById("dlg"), rd = document.getElementById("rdlg"), done = document.getElementById("done"), wd = document.getElementById("welcomeDlg");
+    return !d.open && !(wd && wd.open) && !(od && od.open) && !(rd && rd.open) && !(done && !done.hidden);
   }
   function show() {
     if (!ok()) return;
@@ -565,7 +636,7 @@ var PRODUCT = {
   if (!RECENT_ORDERS.length) return;
   var t = document.getElementById("ordToast"), n = document.getElementById("otName"), x = document.getElementById("otText"), i = 0;
   function busy() {
-    var ids = ["dlg", "rdlg", "exitDlg"];
+    var ids = ["dlg", "rdlg", "exitDlg", "welcomeDlg"];
     for (var k = 0; k < ids.length; k++) { var e = document.getElementById(ids[k]); if (e && e.open) return true; }
     return false;
   }
@@ -578,6 +649,34 @@ var PRODUCT = {
     setTimeout(function () { t.classList.remove("on"); }, SHOW_SEC * 1000);
   }
   setTimeout(function () { show(); setInterval(show, EVERY_SEC * 1000); }, 6000);
+})();
+</script>
+<script>
+/* Order बटन पर क्लिक रिपल (data-order वाले सभी बटन) */
+(function(){
+  document.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("[data-order]");
+    if(!b)return;
+    var r=b.getBoundingClientRect(),d=Math.max(r.width,r.height)*2,sp=document.createElement("span");
+    sp.className="ps-rip";
+    sp.style.cssText="width:"+d+"px;height:"+d+"px;left:"+(e.clientX-r.left-d/2)+"px;top:"+(e.clientY-r.top-d/2)+"px";
+    b.appendChild(sp);setTimeout(function(){sp.remove();},650);
+  });
+})();
+</script>
+<script>
+/* Welcome पॉपअप: पेज खुलते ही दिखता है */
+(function(){
+  var d=document.getElementById("welcomeDlg"),DELAY_MS=700; // ← कितनी देर बाद आए (millisecond)
+  function close(){ if(d.open) d.close(); }
+  document.getElementById("wlX").addEventListener("click",close);
+  document.getElementById("wlLater").addEventListener("click",close);
+  document.getElementById("wlGo").addEventListener("click",close); // ऑर्डर फ़ॉर्म खोलने का काम पुराना data-order कोड करता है
+  d.addEventListener("click",function(e){ if(e.target===d) close(); });
+  setTimeout(function(){
+    if(d.open) return;
+    if(d.showModal) d.showModal(); else d.setAttribute("open","");
+  },DELAY_MS);
 })();
 </script>
 </body>
